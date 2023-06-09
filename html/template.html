@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+
+  <script src="/static/htmx.org"></script>
+  <link rel="stylesheet" href="/static/output.css">
+
+  <title>{{.Title}}</title>
+</head>
+
+<body
+  class="bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-200 ease-in-out flex overflow-hidden font-satoshi">
+  <div class="flex flex-col w-full h-screen">
+    {{template "header" .}}
+
+    <div
+      class="flex flex-col grow scrollbar-thin overflow-auto scrollbar-thumb-base-500 scrollbar-track-base-200 dark:scrollbar-track-base-800">
+      <div class="flex flex-col p-8 m-auto">
+        <h1 class="text-2xl">{{.Title}}</h1>
+        <p>{{.Body}}</p>
+        <div hx-put="/data">
+          Put To Messages
+        </div>
+      </div>
+
+      {{template "footer" .}}
+    </div>
+</body>
+
+</html>
