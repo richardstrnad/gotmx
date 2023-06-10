@@ -7,6 +7,7 @@ import (
 var templateDir = "html/"
 
 func main() {
-	server := NewServer()
+	store := NewInMemoryDataStore()
+	server := NewServer(store)
 	http.ListenAndServe(":80", server)
 }

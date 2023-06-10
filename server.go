@@ -4,11 +4,14 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 type Server struct {
 	http.Handler
 	templates *template.Template
+	store     DataStore
 }
 
 type Task struct {
@@ -16,10 +19,32 @@ type Task struct {
 	UserID int    `json:"user_id"`
 	Title  string `json:"title"`
 	Body   string `json:"body"`
+	NextID int    `json:"next_id"`
+	PrevID int    `json:"prev_id"`
 }
 
 type DataStore interface {
 	GetTask(id int) (Task, error)
+}
+
+func (s *Server) getTaskHandler(w http.ResponseWriter, r *http.Request) {
+	stringID := strings.TrimPrefix(r.URL.Path, "/task/")
+	id, err := strconv.Atoi(stringID)
+	if err != nil {
+		log.Print(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	task, err := s.store.GetTask(id)
+	if err != nil {
+		log.Print(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	err = s.templates.ExecuteTemplate(w, "task.html", task)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -53,12 +78,13 @@ func (s *Server) dataHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("This is data"))
 }
 
-func NewServer() *Server {
+func NewServer(store DataStore) *Server {
 	s := new(Server)
 	router := http.NewServeMux()
 	router.Handle("/", http.HandlerFunc(s.indexHandler))
 	router.Handle("/about", http.HandlerFunc(s.aboutHandler))
 	router.Handle("/data", http.HandlerFunc(s.dataHandler))
+	router.Handle("/task/", http.HandlerFunc(s.getTaskHandler))
 	router.Handle("/static/",
 		http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
@@ -69,6 +95,8 @@ func NewServer() *Server {
 		log.Fatal(err)
 	}
 	s.templates = templates
+
+	s.store = store
 
 	return s
 }
