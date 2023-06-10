@@ -7,11 +7,6 @@ import (
 )
 
 var templateDir = "html/"
-var templateFiles = []string{
-	templateDir + "template.html",
-	templateDir + "header.html",
-	templateDir + "footer.html",
-}
 
 type Server struct {
 	http.Handler
@@ -60,10 +55,17 @@ func NewServer() *Server {
 
 	s.Handler = router
 
-	templates := template.Must(template.ParseFiles(templateFiles...))
+	templates, err := template.ParseGlob(templateDir + "*.html")
+	if err != nil {
+		log.Fatal(err)
+	}
 	s.templates = templates
 
 	return s
+}
+
+func glob(s string) {
+	panic("unimplemented")
 }
 
 func main() {
