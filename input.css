@@ -7,9 +7,9 @@
 		@apply trans bg-base-100 text-base-900 dark:bg-base-900 dark:text-base-100;
 	}
 
-    .brd {
-        @apply border border-slate-500 rounded-md 
-    }
+	.brd {
+		@apply border border-slate-500 rounded-md;
+	}
 
 	.trans {
 		@apply transition-all ease-in-out duration-300;
@@ -225,4 +225,3 @@
 		font-style: normal;
 	}
 }
-
