@@ -41,18 +41,23 @@ func (s *Server) getTaskHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	err = s.templates.ExecuteTemplate(w, "task.html", task)
+	err = s.templates.ExecuteTemplate(w, "task", task)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
 func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
+	task, err := s.store.GetTask(1)
+	if err != nil {
+		log.Fatal(err)
+	}
 	data := Data{
 		Title: "Hello World",
 		Body:  "This is a test",
+		Task:  task,
 	}
-	err := s.templates.ExecuteTemplate(w, "template.html", data)
+	err = s.templates.ExecuteTemplate(w, "template.html", data)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -72,6 +77,7 @@ func (s *Server) aboutHandler(w http.ResponseWriter, r *http.Request) {
 type Data struct {
 	Title string
 	Body  string
+	Task  Task
 }
 
 func (s *Server) dataHandler(w http.ResponseWriter, r *http.Request) {
