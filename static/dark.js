@@ -17,7 +17,13 @@ if (darkMode === "enabled") {
   enableDarkMode(); 
 }
 
-toggleBtn.addEventListener("click", (e) => {
+if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  if (!darkMode) {
+    enableDarkMode();
+  }
+}
+
+toggleBtn.addEventListener("click", () => {
   darkMode = localStorage.getItem("dark-mode");
   if (darkMode === "disabled") {
     enableDarkMode();
