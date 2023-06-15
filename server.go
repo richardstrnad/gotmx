@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
-var VERSION = ""
+var version = ""
 var signer = NewSigner("secret")
 
 type Server struct {
@@ -68,7 +68,7 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 		Title:   "Hello World",
 		Body:    "This is a test",
 		Task:    task,
-		Version: VERSION,
+		Version: version,
 	}
 	err = s.templates.ExecuteTemplate(w, "template.html", data)
 	if err != nil {
@@ -146,7 +146,10 @@ func NewServer(store DataStore) *Server {
 	}
 	s.signer = signer
 
-	VERSION = os.Getenv("VERSION")
+	envVersion := os.Getenv("VERSION")
+	if envVersion != "" {
+		version = envVersion
+	}
 
 	return s
 }
