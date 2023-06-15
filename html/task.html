@@ -1,6 +1,8 @@
 {{define "task"}}
 <div id="tasks">
-  <div class="p-8 brd bg-base-200 border-base-300 dark:bg-base-800 dark:border-base-700">
+  <!-- https://www.crocodile.dev/blog/css-transitions-with-tailwind-and-htmx -->
+  <div
+    class="htmx-swapping:opacity-0 transition-all duration-500 ease-in-out relative p-8 brd bg-base-200 border-base-300 dark:bg-base-800 dark:border-base-700">
     <div class="text-xl">
       {{.Title}}
     </div>

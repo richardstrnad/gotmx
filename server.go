@@ -7,8 +7,10 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
+	"golang.org/x/time/rate"
 )
 
 var version = ""
@@ -19,6 +21,7 @@ type Server struct {
 	templates *template.Template
 	store     DataStore
 	signer    *Signer
+	websocket *WebSocket
 }
 
 type Task struct {
@@ -95,6 +98,15 @@ type Data struct {
 }
 
 func (s *Server) dataHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		err := r.ParseForm()
+		if err != nil {
+			log.Print(err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		log.Print(r.FormValue("email"))
+	}
 	w.Write([]byte("This is data"))
 }
 
@@ -121,6 +133,7 @@ func NewServer(store DataStore) *Server {
 	router.Handle("/about", http.HandlerFunc(s.aboutHandler))
 	router.Handle("/data", http.HandlerFunc(s.dataHandler))
 	router.Handle("/task/", http.HandlerFunc(s.getTaskHandler))
+	router.Handle("/ws/subscribe", http.HandlerFunc(s.subscribeHandler))
 
 	handler := MiddleWare{router}
 
@@ -150,6 +163,11 @@ func NewServer(store DataStore) *Server {
 	if envVersion != "" {
 		version = envVersion
 	}
+
+	s.websocket = new(WebSocket)
+	s.websocket.subscribers = make(map[*subscriber]struct{})
+	s.websocket.subscriberMessageBuffer = 16
+	s.websocket.publishLimiter = rate.NewLimiter(rate.Every(time.Millisecond*100), 8)
 
 	return s
 }
