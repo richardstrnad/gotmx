@@ -18,10 +18,11 @@ var signer = NewSigner("secret")
 
 type Server struct {
 	http.Handler
-	templates *template.Template
-	store     DataStore
-	signer    *Signer
-	websocket *WebSocket
+	templates   *template.Template
+	store       DataStore
+	signer      *Signer
+	websocket   *WebSocket
+	templateMap map[string]*template.Template
 }
 
 type Task struct {
@@ -73,7 +74,7 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 		Task:    task,
 		Version: version,
 	}
-	err = s.templates.ExecuteTemplate(w, "template.html", data)
+	err = s.templateMap["index"].ExecuteTemplate(w, "template.html", data)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -84,7 +85,7 @@ func (s *Server) aboutHandler(w http.ResponseWriter, r *http.Request) {
 		Title: "About",
 		Body:  "This is about",
 	}
-	err := s.templates.ExecuteTemplate(w, "template.html", data)
+	err := s.templateMap["about"].ExecuteTemplate(w, "template.html", data)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -146,6 +147,15 @@ func NewServer(store DataStore) *Server {
 
 	templates, err := template.New("dummy").Funcs(getFunctions()).ParseGlob(templateDir + "/*.html")
 	template.Must(templates.ParseGlob(templateDir + "/components/*.html"))
+	template.Must(templates.ParseGlob(templateDir + "/icons/*.html"))
+
+	tmpl := make(map[string]*template.Template)
+	about := template.Must(templates.Clone())
+	index := template.Must(templates.Clone())
+	tmpl["index"] = template.Must(index.ParseFiles(templateDir + "views/index.html"))
+	tmpl["about"] = template.Must(about.ParseFiles(templateDir + "views/about.html"))
+	s.templateMap = tmpl
+
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -1727,6 +1727,10 @@ body {
   height: 100vh;
 }
 
+.h-6 {
+  height: 1.5rem;
+}
+
 .w-0 {
   width: 0px;
 }
@@ -1741,6 +1745,14 @@ body {
 
 .w-full {
   width: 100%;
+}
+
+.w-6 {
+  width: 1.5rem;
+}
+
+.w-4 {
+  width: 1rem;
 }
 
 .max-w-6xl {
@@ -1816,6 +1828,14 @@ body {
   background-color: rgb(191 219 254 / var(--tw-bg-opacity));
 }
 
+.stroke-gray-300 {
+  stroke: #d1d5db;
+}
+
+.stroke-red-300 {
+  stroke: #fca5a5;
+}
+
 .p-1 {
   padding: 0.25rem;
 }
@@ -1878,6 +1898,11 @@ body {
 .text-primary-500 {
   --tw-text-opacity: 1;
   color: rgb(59 130 246 / var(--tw-text-opacity));
+}
+
+.text-gray-300 {
+  --tw-text-opacity: 1;
+  color: rgb(209 213 219 / var(--tw-text-opacity));
 }
 
 .opacity-0 {

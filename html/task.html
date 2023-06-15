@@ -14,5 +14,6 @@
     {{template "button" (map "target" "#tasks" "value" (printf "/task/%d" .PrevID) "text" "Previous")}}
     {{template "button" (map "target" "#tasks" "value" (printf "/task/%d" .NextID) "text" "Next")}}
   </div>
+  {{template "AcademicCap" "stroke-red-300 w-5 h-5"}}
 </div>
 {{end}}
