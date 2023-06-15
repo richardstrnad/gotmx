@@ -8,7 +8,7 @@
 	}
 
 	.brd {
-		@apply border border-slate-500 rounded-md;
+		@apply border rounded-md;
 	}
 
 	.trans {

@@ -1,0 +1,4 @@
+{{define "button"}}
+<button {{ if .value }} hx-get="{{.value}}" {{end}} {{- if .target}} hx-target="{{.target}}" {{end}}
+  class="brd px-2 py-1 bg-primary-200 border-primary-300 dark:bg-primary-800 dark:border-primary-700">{{.text}}</button>
+{{end}}

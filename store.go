@@ -38,5 +38,6 @@ func (s *InMemoryDataStore) GetTask(id int) (Task, error) {
 	}
 	task.NextID = id + 1
 	task.PrevID = id - 1
+	task.Target = "#tasks"
 	return task, nil
 }

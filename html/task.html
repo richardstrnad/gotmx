@@ -1,16 +1,16 @@
 {{define "task"}}
-<div class="brd bg-base-200 dark:bg-base-800 p-8">
-  <div class="text-xl">
-    {{.Title}}
+<div id="tasks">
+  <div class="p-8 brd bg-base-200 border-base-300 dark:bg-base-800 dark:border-base-700">
+    <div class="text-xl">
+      {{.Title}}
+    </div>
+    <div class="prose dark:text-base-100">
+      {{.Body}}
+    </div>
   </div>
-  <div class="prose dark:text-base-100">
-    {{.Body}}
+  <div class="mt-2 flex justify-between">
+    {{template "button" (map "target" "#tasks" "value" (printf "/task/%d" .PrevID) "text" "Previous")}}
+    {{template "button" (map "target" "#tasks" "value" (printf "/task/%d" .NextID) "text" "Next")}}
   </div>
-</div>
-<div class="mt-2 flex justify-between">
-  <button hx-get="/task/{{.PrevID}}" hx-target="#tasks"
-    class="brd px-2 py-1 bg-primary-200 dark:bg-primary-800">Previous</button>
-  <button hx-get="/task/{{.NextID}}" hx-target="#tasks"
-    class="brd px-2 py-1 bg-primary-200 dark:bg-primary-800">Next</button>
 </div>
 {{end}}
