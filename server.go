@@ -59,6 +59,25 @@ func (s *Server) getTaskHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (s *Server) contentHandler(w http.ResponseWriter, r *http.Request) {
+	path := strings.TrimPrefix(r.URL.Path, "/content/")
+	data := Data{
+		Title: "About",
+		Body:  "This is about",
+	}
+	urlPath := path
+	if path == "index" {
+		urlPath = "/"
+	}
+	w.Header().Add("hx-push", urlPath)
+	err := s.templateMap[path].ExecuteTemplate(w, "content", data)
+	if err != nil {
+		log.Print(err)
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+}
+
 func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" { // Check path here
 		http.NotFound(w, r)
@@ -134,6 +153,7 @@ func NewServer(store DataStore) *Server {
 	router.Handle("/about", http.HandlerFunc(s.aboutHandler))
 	router.Handle("/data", http.HandlerFunc(s.dataHandler))
 	router.Handle("/task/", http.HandlerFunc(s.getTaskHandler))
+	router.Handle("/content/", http.HandlerFunc(s.contentHandler))
 	router.Handle("/ws/subscribe", http.HandlerFunc(s.subscribeHandler))
 
 	handler := MiddleWare{router}

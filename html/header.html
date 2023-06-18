@@ -1,7 +1,9 @@
 {{define "header"}}
 <nav class="trans p-2 text-base-600 dark:text-base-400">
   <div class="max-w-6xl m-auto flex justify-between">
-    <div class="font-cabinet font-black text-4xl text-primary-500">go & htmx</div>
+    <a href="" hx-get="/content/index" hx-target="#content">
+      <div class="font-cabinet font-black text-4xl text-primary-500">go & htmx</div>
+    </a>
     <div class="flex">
       <div class="flex md:hidden">
         <div class="mr-2 flex items-center">
@@ -10,7 +12,7 @@
       </div>
       <div class="hidden md:flex items-center">
         <div class="ml-1 first:ml-0 rounded-md [&.active]:bg-primary-500 px-2 py-1 [&.active]:text-primary-100">
-          <a href="about">
+          <a href="" hx-get="/content/about" hx-target="#content">
             About
           </a>
         </div>
