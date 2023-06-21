@@ -24,7 +24,6 @@ if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').match
 }
 
 document.body.addEventListener("click", (element) => {
-  console.log(element.target)
   if (element.target.id === "toggle-btn") {
     darkMode = localStorage.getItem("dark-mode");
     if (darkMode === "disabled") {
