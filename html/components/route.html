@@ -1,0 +1,5 @@
+{{define "route"}}
+<a href="" {{ if eq .ActivePath .URL }} class="underline" {{ end }} hx-get="{{ .URL }}" hx-target="#content">
+  {{ .Name }}
+</a>
+{{end}}

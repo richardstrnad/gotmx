@@ -46,8 +46,13 @@ type Data struct {
 	Version string
 }
 
+type SEO struct {
+	Description string
+}
+
 type Config struct {
 	Data          Data
+	SEO           SEO
 	PartialUpdate bool
 	Path          string
 }
@@ -82,13 +87,17 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 	data := Data{
-		Title:   "Hello World",
+		Title:   "Index",
 		Body:    "This is a test",
 		Task:    task,
 		Version: version,
 	}
+	seo := SEO{
+		Description: "This is the index page",
+	}
 	config := Config{
 		Data: data,
+		SEO:  seo,
 	}
 	err = s.routeHandler("index", config, w, r)
 	if err != nil {
@@ -101,8 +110,12 @@ func (s *Server) aboutHandler(w http.ResponseWriter, r *http.Request) {
 		Title: "About",
 		Body:  "This is about",
 	}
+	seo := SEO{
+		Description: "This is the about page",
+	}
 	config := Config{
 		Data: data,
+		SEO:  seo,
 	}
 	err := s.routeHandler("about", config, w, r)
 	if err != nil {
@@ -116,6 +129,9 @@ func (s *Server) routeHandler(name string, config Config, w http.ResponseWriter,
 	if r.Header.Get("Hx-Request") == "true" {
 		w.Header().Add("hx-push", r.URL.Path)
 		config.PartialUpdate = true
+		// the order here matters, first the <head> parts should be sent as this
+		// allows to the DOM to be properly built in the frontend.
+		err = s.templateMap[name].ExecuteTemplate(w, "seo", config)
 		err = s.templateMap[name].ExecuteTemplate(w, "content", config)
 		err = s.templateMap[name].ExecuteTemplate(w, "header", config)
 	} else {

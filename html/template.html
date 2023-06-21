@@ -7,9 +7,10 @@
 
   <script src="/static/htmx.org"></script>
   <script src="/static/ws.js"></script>
+  <script src="/static/meta.js"></script>
   <link rel="stylesheet" href="/static/output.css">
 
-  <title>{{.Data.Title}}</title>
+  {{ template "seo" . }}
 </head>
 
 <body class="ease-in-out flex overflow-hidden font-satoshi">
