@@ -14,7 +14,7 @@ const disableDarkMode = () => {
 };
 
 if (darkMode === "enabled") {
-  enableDarkMode(); 
+  enableDarkMode();
 }
 
 if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -23,11 +23,14 @@ if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').match
   }
 }
 
-toggleBtn.addEventListener("click", () => {
-  darkMode = localStorage.getItem("dark-mode");
-  if (darkMode === "disabled") {
-    enableDarkMode();
-  } else {
-    disableDarkMode();
+document.body.addEventListener("click", (element) => {
+  console.log(element.target)
+  if (element.target.id === "toggle-btn") {
+    darkMode = localStorage.getItem("dark-mode");
+    if (darkMode === "disabled") {
+      enableDarkMode();
+    } else {
+      disableDarkMode();
+    }
   }
 });

@@ -1,7 +1,8 @@
 {{define "header"}}
-<nav class="trans p-2 text-base-600 dark:text-base-400">
+<nav id="header" {{ if .PartialUpdate }} hx-swap-oob="true" {{ end }}
+  class="trans p-2 text-base-600 dark:text-base-400">
   <div class="max-w-6xl m-auto flex justify-between">
-    <a href="" hx-get="/content/index" hx-target="#content">
+    <a href="" hx-get="/" hx-target="#content">
       <div class="font-cabinet font-black text-4xl text-primary-500">go & htmx</div>
     </a>
     <div class="flex">
@@ -11,19 +12,20 @@
         </div>
       </div>
       <div class="hidden md:flex items-center">
-        <div class="ml-1 first:ml-0 rounded-md [&.active]:bg-primary-500 px-2 py-1 [&.active]:text-primary-100">
-          <a href="" hx-get="/content/about" hx-target="#content">
+        <div id="header-menu" class="ml-1 first:ml-0 rounded-md px-2 py-1 ">
+          <a href="" {{ if eq .Path "/" }} class="underline" {{ end }} hx-get="/" hx-target="#content">
+            Home
+          </a>
+          <a href="" {{ if eq .Path "/about" }} class="underline" {{ end }} hx-get="/about" hx-target="#content">
             About
           </a>
         </div>
         <div class="ml-2 flex items-center">
-          <button id="toggle-btn" class="dark-mode-toggle">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-              stroke="currentColor" class="w-5 h-5">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-            </svg>
-          </button>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-5 h-5 hover:cursor-pointer" id="toggle-btn">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+          </svg>
         </div>
       </div>
     </div>

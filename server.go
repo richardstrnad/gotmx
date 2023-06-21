@@ -39,6 +39,19 @@ type DataStore interface {
 	GetTask(id int) (Task, error)
 }
 
+type Data struct {
+	Title   string
+	Body    string
+	Task    Task
+	Version string
+}
+
+type Config struct {
+	Data          Data
+	PartialUpdate bool
+	Path          string
+}
+
 func (s *Server) getTaskHandler(w http.ResponseWriter, r *http.Request) {
 	stringID := strings.TrimPrefix(r.URL.Path, "/task/")
 	id, err := strconv.Atoi(stringID)
@@ -59,25 +72,6 @@ func (s *Server) getTaskHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Server) contentHandler(w http.ResponseWriter, r *http.Request) {
-	path := strings.TrimPrefix(r.URL.Path, "/content/")
-	data := Data{
-		Title: "About",
-		Body:  "This is about",
-	}
-	urlPath := path
-	if path == "index" {
-		urlPath = "/"
-	}
-	w.Header().Add("hx-push", urlPath)
-	err := s.templateMap[path].ExecuteTemplate(w, "content", data)
-	if err != nil {
-		log.Print(err)
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
-}
-
 func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" { // Check path here
 		http.NotFound(w, r)
@@ -93,7 +87,10 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 		Task:    task,
 		Version: version,
 	}
-	err = s.templateMap["index"].ExecuteTemplate(w, "template.html", data)
+	config := Config{
+		Data: data,
+	}
+	err = s.routeHandler("index", config, w, r)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -104,17 +101,27 @@ func (s *Server) aboutHandler(w http.ResponseWriter, r *http.Request) {
 		Title: "About",
 		Body:  "This is about",
 	}
-	err := s.templateMap["about"].ExecuteTemplate(w, "template.html", data)
+	config := Config{
+		Data: data,
+	}
+	err := s.routeHandler("about", config, w, r)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-type Data struct {
-	Title   string
-	Body    string
-	Task    Task
-	Version string
+func (s *Server) routeHandler(name string, config Config, w http.ResponseWriter, r *http.Request) error {
+	var err error
+	config.Path = r.URL.Path
+	if r.Header.Get("Hx-Request") == "true" {
+		w.Header().Add("hx-push", r.URL.Path)
+		config.PartialUpdate = true
+		err = s.templateMap[name].ExecuteTemplate(w, "content", config)
+		err = s.templateMap[name].ExecuteTemplate(w, "header", config)
+	} else {
+		err = s.templateMap[name].ExecuteTemplate(w, "template.html", config)
+	}
+	return err
 }
 
 func (s *Server) dataHandler(w http.ResponseWriter, r *http.Request) {
@@ -153,7 +160,6 @@ func NewServer(store DataStore) *Server {
 	router.Handle("/about", http.HandlerFunc(s.aboutHandler))
 	router.Handle("/data", http.HandlerFunc(s.dataHandler))
 	router.Handle("/task/", http.HandlerFunc(s.getTaskHandler))
-	router.Handle("/content/", http.HandlerFunc(s.contentHandler))
 	router.Handle("/ws/subscribe", http.HandlerFunc(s.subscribeHandler))
 
 	handler := MiddleWare{router}
