@@ -8,3 +8,6 @@ build:
 
 tw:
 	tailwindcss -i input.css -o static/output.css --watch
+
+test:
+	go test -v ./...

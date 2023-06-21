@@ -2,7 +2,7 @@
 <nav id="header" {{ if .PartialUpdate }} hx-swap-oob="true" {{ end }}
   class="trans p-2 text-base-600 dark:text-base-400">
   <div class="max-w-6xl m-auto flex justify-between">
-    <a href="" hx-get="/" hx-target="#content">
+    <a hx-boost="true" href="/" hx-target="#content">
       <div class="font-cabinet font-black text-4xl text-primary-500">go & htmx</div>
     </a>
     <div class="flex">
