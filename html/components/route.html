@@ -1,5 +1,5 @@
 {{define "route"}}
-<a href="{{ .URL }}" {{ if eq .ActivePath .URL }} class="underline" {{ end }} hx-boost="true" hx-target="#content">
-  {{ .Name }}
+<a href="{{ .URL }}" {{ if eq .ActivePath .URL }} class="font-bold" {{ end }} hx-boost="true" hx-target="#content">
+  {{- .Name -}}
 </a>
 {{end}}
