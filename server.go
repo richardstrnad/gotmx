@@ -44,6 +44,7 @@ type Data struct {
 	Body    string
 	Task    Task
 	Version string
+	Dark    bool
 }
 
 type SEO struct {
@@ -91,6 +92,7 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 		Body:    "This is a test",
 		Task:    task,
 		Version: version,
+		Dark:    false,
 	}
 	seo := SEO{
 		Description: "This is the index page",
@@ -98,6 +100,10 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 	config := Config{
 		Data: data,
 		SEO:  seo,
+	}
+	darkMode := w.Header().Get("Dark-Mode")
+	if darkMode == "enabled" {
+		config.Data.Dark = true
 	}
 	err = s.routeHandler("index", config, w, r)
 	if err != nil {
@@ -123,9 +129,17 @@ func (s *Server) aboutHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func darkMode(w http.ResponseWriter, config *Config) {
+	darkMode := w.Header().Get("Dark-Mode")
+	if darkMode == "enabled" {
+		config.Data.Dark = true
+	}
+}
+
 func (s *Server) routeHandler(name string, config Config, w http.ResponseWriter, r *http.Request) error {
 	var err error
 	config.Path = r.URL.Path
+	darkMode(w, &config)
 	if r.Header.Get("Hx-Request") == "true" {
 		w.Header().Add("hx-push", r.URL.Path)
 		config.PartialUpdate = true
@@ -163,6 +177,12 @@ func cookieMiddleware(w http.ResponseWriter, r *http.Request) {
 			Name:  "session",
 			Value: cookieValue,
 		})
+	}
+	darkMode, err := r.Cookie("dark-mode")
+	if err != nil {
+		log.Print(err)
+	} else {
+		w.Header().Add("Dark-Mode", darkMode.Value)
 	}
 	log.Print(cookie)
 }

@@ -62,3 +62,28 @@ func TestIndexPage(t *testing.T) {
 		assertResponseBody(t, response.Body.String(), "<title>Index</title>")
 	})
 }
+
+func TestDarkMode(t *testing.T) {
+	store := &MockStore{}
+	server := NewServer(store)
+
+	t.Run("get page with dark mode cookie set", func(t *testing.T) {
+		cookie := http.Cookie{Name: "dark-mode", Value: "enabled"}
+		req, _ := http.NewRequest(http.MethodGet, "/", nil)
+		req.AddCookie(&cookie)
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, req)
+		assertStatus(t, response.Code, http.StatusOK)
+		assertResponseBody(t, response.Body.String(), `<input id="toggle-btn" checked type="checkbox" class="peer opacity-0 w-0 h-0">`)
+	})
+
+	t.Run("get page with dark mode cookie not set", func(t *testing.T) {
+		req, _ := http.NewRequest(http.MethodGet, "/", nil)
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, req)
+		assertStatus(t, response.Code, http.StatusOK)
+		assertResponseBody(t, response.Body.String(), `<input id="toggle-btn"  type="checkbox" class="peer opacity-0 w-0 h-0">`)
+	})
+}

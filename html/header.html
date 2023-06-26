@@ -17,7 +17,7 @@
           {{template "route" (map "ActivePath" .Path "URL" "/about" "Name" "About")}}
         </div>
         <div class="ml-2 flex items-center">
-          {{ template "toggle" (map "ID" "toggle-btn") }}
+          {{ template "toggle" (map "ID" "toggle-btn" "Dark" .Data.Dark) }}
         </div>
       </div>
     </div>

@@ -1888,10 +1888,6 @@ body {
   color: rgb(59 130 246 / var(--tw-text-opacity));
 }
 
-.underline {
-  text-decoration-line: underline;
-}
-
 .opacity-0 {
   opacity: 0;
 }
@@ -1974,10 +1970,6 @@ body {
   margin-left: 0px;
 }
 
-.hover\:cursor-pointer:hover {
-  cursor: pointer;
-}
-
 .peer:checked ~ .peer-checked\:bg-blue-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(59 130 246 / var(--tw-bg-opacity));
@@ -2035,14 +2027,4 @@ body {
   .md\:hidden {
     display: none;
   }
-}
-
-.\[\&\.active\]\:bg-primary-500.active {
-  --tw-bg-opacity: 1;
-  background-color: rgb(59 130 246 / var(--tw-bg-opacity));
-}
-
-.\[\&\.active\]\:text-primary-100.active {
-  --tw-text-opacity: 1;
-  color: rgb(219 234 254 / var(--tw-text-opacity));
 }
