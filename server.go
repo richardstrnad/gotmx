@@ -101,7 +101,7 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 		Data: data,
 		SEO:  seo,
 	}
-	darkMode := w.Header().Get("Dark-Mode")
+	darkMode := w.Header().Get("dark-mode")
 	if darkMode == "enabled" {
 		config.Data.Dark = true
 	}
@@ -182,7 +182,7 @@ func cookieMiddleware(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Print(err)
 	} else {
-		w.Header().Add("Dark-Mode", darkMode.Value)
+		w.Header().Add("dark-mode", darkMode.Value)
 	}
 	log.Print(cookie)
 }
