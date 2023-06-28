@@ -1,9 +1,8 @@
 {{define "toggle"}}
-<div class="mt-5">
-  <label class="relative inline-block w-8 h-4 rounded-full">
-    <input id="{{ .ID }}" {{ if .Dark }}checked{{ end }} type="checkbox" class="peer opacity-0 w-0 h-0">
-    <span class="absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-300 rounded-full duration-300 before:content-[''] before:absolute before:w-3 before:h-3 before:bottom-0.5 before:left-0.5 before:rounded-full
-                before:bg-white before:duration-300 peer-checked:before:translate-x-4 peer-checked:bg-blue-500"></span>
-  </label>
-</div>
+<label class="relative inline-block w-8 h-4 rounded-full">
+  <input id="{{ .ID }}" {{ if .Dark }}checked{{ end }} type="checkbox" class="peer opacity-0 w-0 h-0">
+  <span
+    class="absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-300 rounded-full duration-300 before:content-[''] before:absolute before:w-3 before:h-3 before:bottom-0.5 before:left-0.5 before:rounded-full
+                before:bg-white before:duration-300 peer-checked:before:translate-x-4 peer-checked:bg-primary-500"></span>
+</label>
 {{end}}
