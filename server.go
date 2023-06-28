@@ -40,11 +40,9 @@ type DataStore interface {
 }
 
 type Data struct {
-	Title   string
-	Body    string
-	Task    Task
-	Version string
-	Dark    bool
+	Title string
+	Body  string
+	Task  Task
 }
 
 type SEO struct {
@@ -56,6 +54,8 @@ type Config struct {
 	SEO           SEO
 	PartialUpdate bool
 	Path          string
+	Version       string
+	Dark          bool
 }
 
 func (s *Server) getTaskHandler(w http.ResponseWriter, r *http.Request) {
@@ -88,11 +88,9 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 	data := Data{
-		Title:   "Index",
-		Body:    "This is a test",
-		Task:    task,
-		Version: version,
-		Dark:    false,
+		Title: "Index",
+		Body:  "This is a test",
+		Task:  task,
 	}
 	seo := SEO{
 		Description: "This is the index page",
@@ -100,10 +98,6 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 	config := Config{
 		Data: data,
 		SEO:  seo,
-	}
-	darkMode := w.Header().Get("dark-mode")
-	if darkMode == "enabled" {
-		config.Data.Dark = true
 	}
 	err = s.routeHandler("index", config, w, r)
 	if err != nil {
@@ -132,14 +126,19 @@ func (s *Server) aboutHandler(w http.ResponseWriter, r *http.Request) {
 func darkMode(w http.ResponseWriter, config *Config) {
 	darkMode := w.Header().Get("Dark-Mode")
 	if darkMode == "enabled" {
-		config.Data.Dark = true
+		config.Dark = true
 	}
+}
+
+func versionHandler(config *Config) {
+	config.Version = version
 }
 
 func (s *Server) routeHandler(name string, config Config, w http.ResponseWriter, r *http.Request) error {
 	var err error
 	config.Path = r.URL.Path
 	darkMode(w, &config)
+	versionHandler(&config)
 	if r.Header.Get("Hx-Request") == "true" {
 		w.Header().Add("hx-push", r.URL.Path)
 		config.PartialUpdate = true

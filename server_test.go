@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 )
@@ -85,5 +86,21 @@ func TestDarkMode(t *testing.T) {
 		server.ServeHTTP(response, req)
 		assertStatus(t, response.Code, http.StatusOK)
 		assertResponseBody(t, response.Body.String(), `<input id="toggle-btn"  type="checkbox" class="peer opacity-0 w-0 h-0">`)
+	})
+}
+
+func TestVersion(t *testing.T) {
+	store := &MockStore{}
+	server := NewServer(store)
+
+	t.Run("get page with version set", func(t *testing.T) {
+		request := newIndexRequest()
+		response := httptest.NewRecorder()
+
+		expectedVersion := os.Getenv("VERSION")
+
+		server.ServeHTTP(response, request)
+		assertStatus(t, response.Code, http.StatusOK)
+		assertResponseBody(t, response.Body.String(), expectedVersion)
 	})
 }
