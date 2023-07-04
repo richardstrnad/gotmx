@@ -15,6 +15,7 @@
         <div id="header-menu" class="ml-1 first:ml-0 rounded-md px-2 py-1 ">
           {{template "route" (map "ActivePath" .Path "URL" "/" "Name" "Home")}}
           {{template "route" (map "ActivePath" .Path "URL" "/about" "Name" "About")}}
+          {{template "route" (map "ActivePath" .Path "URL" "/task/1" "Name" "Task")}}
         </div>
         <div class="ml-2 flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"

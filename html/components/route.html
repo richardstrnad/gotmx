@@ -1,5 +1,9 @@
 {{define "route"}}
-<a href="{{ .URL }}" {{ if eq .ActivePath .URL }} class="font-bold" {{ end }} hx-boost="true" hx-target="#content">
+{{ $mainURL := split .URL "/" }}
+{{ $mainPath := split .ActivePath "/" }}
+{{ $mainURL = index $mainURL 1 }}
+{{ $mainPath = index $mainPath 1 }}
+<a href="{{ .URL }}" {{ if eq $mainPath $mainURL }} class="font-bold" {{ end }} hx-boost="true" hx-target="#content">
   {{- .Name -}}
 </a>
 {{end}}

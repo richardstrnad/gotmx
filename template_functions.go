@@ -3,7 +3,13 @@ package main
 import (
 	"errors"
 	"fmt"
+	"strings"
 )
+
+func Split(s string, d string) []string {
+	arr := strings.Split(s, d)
+	return arr
+}
 
 // https://go.dev/play/p/5Hiajt4H2Z5
 func getFunctions() map[string]any {
@@ -25,6 +31,7 @@ func getFunctions() map[string]any {
 			}
 			return m, nil
 		},
+		"split": Split,
 	}
 	return funcs
 }

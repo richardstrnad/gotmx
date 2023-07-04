@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -83,14 +84,9 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	task, err := s.store.GetTask(1)
-	if err != nil {
-		log.Fatal(err)
-	}
 	data := Data{
 		Title: "Index",
 		Body:  "This is a test",
-		Task:  task,
 	}
 	seo := SEO{
 		Description: "This is the index page",
@@ -99,7 +95,36 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 		Data: data,
 		SEO:  seo,
 	}
-	err = s.routeHandler("index", config, w, r)
+	err := s.routeHandler("index", config, w, r)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func (s *Server) taskHandler(w http.ResponseWriter, r *http.Request) {
+	stringID := strings.TrimPrefix(r.URL.Path, "/task/")
+	id, err := strconv.Atoi(stringID)
+	if err != nil {
+		log.Print(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	task, err := s.store.GetTask(id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	data := Data{
+		Title: task.Title,
+		Task:  task,
+	}
+	seo := SEO{
+		Description: fmt.Sprintf("Page about Task %s", task.Title),
+	}
+	config := Config{
+		Data: data,
+		SEO:  seo,
+	}
+	err = s.routeHandler("task", config, w, r)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -143,7 +168,7 @@ func (s *Server) routeHandler(name string, config Config, w http.ResponseWriter,
 		w.Header().Add("hx-push", r.URL.Path)
 		config.PartialUpdate = true
 		// the order here matters, first the <head> parts should be sent as this
-		// allows to the DOM to be properly built in the frontend.
+		// allows the DOM to be properly built in the frontend.
 		err = s.templateMap[name].ExecuteTemplate(w, "seo", config)
 		err = s.templateMap[name].ExecuteTemplate(w, "content", config)
 		err = s.templateMap[name].ExecuteTemplate(w, "header", config)
@@ -194,7 +219,8 @@ func NewServer(store DataStore) *Server {
 	router.Handle("/", http.HandlerFunc(s.indexHandler))
 	router.Handle("/about", http.HandlerFunc(s.aboutHandler))
 	router.Handle("/data", http.HandlerFunc(s.dataHandler))
-	router.Handle("/task/", http.HandlerFunc(s.getTaskHandler))
+	router.Handle("/task/", http.HandlerFunc(s.taskHandler))
+	// router.Handle("/task/", http.HandlerFunc(s.getTaskHandler))
 	router.Handle("/ws/subscribe", http.HandlerFunc(s.subscribeHandler))
 
 	handler := MiddleWare{router}
@@ -213,7 +239,9 @@ func NewServer(store DataStore) *Server {
 	tmpl := make(map[string]*template.Template)
 	about := template.Must(templates.Clone())
 	index := template.Must(templates.Clone())
+	task := template.Must(templates.Clone())
 	tmpl["index"] = template.Must(index.ParseFiles(templateDir + "views/index.html"))
+	tmpl["task"] = template.Must(task.ParseFiles(templateDir + "views/task.html"))
 	tmpl["about"] = template.Must(about.ParseFiles(templateDir + "views/about.html"))
 	s.templateMap = tmpl
 
