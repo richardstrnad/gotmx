@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"net/http"
@@ -33,6 +33,41 @@ func newIndexRequest() *http.Request {
 	return req
 }
 
+func newAboutRequest() *http.Request {
+	req, _ := http.NewRequest(http.MethodGet, "/about", nil)
+	return req
+}
+
+type CustomResponseWriter struct {
+	body       []byte
+	statusCode int
+	header     http.Header
+}
+
+func NewCustomResponseWriter() *CustomResponseWriter {
+	return &CustomResponseWriter{
+		header: http.Header{},
+	}
+}
+
+func (w *CustomResponseWriter) Header() http.Header {
+	return w.header
+}
+
+func (w *CustomResponseWriter) Write(b []byte) (int, error) {
+	w.body = b
+	// implement it as per your requirement
+	return 0, nil
+}
+
+func (w *CustomResponseWriter) WriteHeader(statusCode int) {
+	w.statusCode = statusCode
+}
+
+var okFn = func(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+}
+
 func TestIndexPage(t *testing.T) {
 	store := &MockStore{}
 	server := NewServer(store)
@@ -61,6 +96,45 @@ func TestIndexPage(t *testing.T) {
 		server.ServeHTTP(response, request)
 		assertStatus(t, response.Code, http.StatusOK)
 		assertResponseBody(t, response.Body.String(), "<title>Index</title>")
+	})
+}
+
+func TestAboutPage(t *testing.T) {
+	store := &MockStore{}
+	server := NewServer(store)
+
+	t.Run("Get full page", func(t *testing.T) {
+		request := newAboutRequest()
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+		assertStatus(t, response.Code, http.StatusOK)
+		assertResponseBody(t, response.Body.String(), "about")
+	})
+
+	t.Run("Verify that the title is properly set", func(t *testing.T) {
+		request := newAboutRequest()
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+		assertStatus(t, response.Code, http.StatusOK)
+		assertResponseBody(t, response.Body.String(), "<title>About</title>")
+	})
+}
+
+func TestNonexistingPage(t *testing.T) {
+	store := &MockStore{}
+	server := NewServer(store)
+
+	t.Run("Get invalid template", func(t *testing.T) {
+		config := Config{}
+		w := CustomResponseWriter{}
+		r := http.Request{}
+		err := server.routeHandler("invalid.html", config, &w, &r)
+		expected := "template invalid.html not found"
+		if err.Error() != expected {
+			t.Errorf("got %q, want %q", err.Error(), expected)
+		}
 	})
 }
 

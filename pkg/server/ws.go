@@ -1,10 +1,7 @@
-package main
+package server
 
 import (
 	"context"
-	"errors"
-	"log"
-	"net/http"
 	"sync"
 	"time"
 
@@ -22,29 +19,6 @@ type WebSocket struct {
 type subscriber struct {
 	msgs      chan []byte
 	closeSlow func()
-}
-
-func (s *Server) subscribeHandler(w http.ResponseWriter, r *http.Request) {
-	c, err := websocket.Accept(w, r,
-		&websocket.AcceptOptions{OriginPatterns: []string{"*"}})
-	if err != nil {
-		log.Print(err)
-		return
-	}
-	defer c.Close(websocket.StatusInternalError, "")
-
-	err = s.subscribe(r.Context(), c)
-	if errors.Is(err, context.Canceled) {
-		return
-	}
-	if websocket.CloseStatus(err) == websocket.StatusNormalClosure ||
-		websocket.CloseStatus(err) == websocket.StatusGoingAway {
-		return
-	}
-	if err != nil {
-		log.Print(err)
-		return
-	}
 }
 
 func (s *Server) subscribe(ctx context.Context, c *websocket.Conn) error {
@@ -86,7 +60,7 @@ func (s *Server) deleteSubscriber(sub *subscriber) {
 	s.websocket.subscribersMu.Unlock()
 }
 
-func (s *Server) publish(msg []byte) {
+func (s *Server) Publish(msg []byte) {
 	s.websocket.subscribersMu.Lock()
 	defer s.websocket.subscribersMu.Unlock()
 

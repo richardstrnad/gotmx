@@ -1715,6 +1715,10 @@ body {
   height: 0px;
 }
 
+.h-24 {
+  height: 6rem;
+}
+
 .h-4 {
   height: 1rem;
 }
